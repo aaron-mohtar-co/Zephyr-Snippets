@@ -1,8 +1,23 @@
+/* 
+ * ADC Example for Nordic Semiconductor SoCs
+ * Uses vendor specific nrf_saadc_* API instead of common Zephyr API.
+ * 
+ * Reads an analog voltage from two ADC inputs (P0.30 & P0.31) and prints 
+ * result on console.
+ * 
+ * Un-comment or comment out BLOCKING and NONBLOCKING defines to switch 
+ * between blocking and non-blocking behaviour.
+ * 
+ * Nordic has SAADC examples located in your nRF Connect SDK folder at
+ * <nRF Connect SDK root>\modules\hal\nordic\samples\src\nrfx_saadc
+ */
+
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
 #include <nrfx_saadc.h>
 
+// Select between blocking or non-blocking behaviour
 //#define BLOCKING
 #define NONBLOCKING
 
@@ -17,9 +32,7 @@
 #define ADC_BUFF_SIZE 64
 
 static nrf_saadc_value_t adc_rawDataBuffer[ADC_NUM_OF_CHANNELS];
-
 static uint8_t adc_bufferCounter = 0;
-
 static uint16_t adc_buffer[ADC_BUFF_SIZE];
 
 // Function prototypes 
@@ -54,7 +67,7 @@ static void adc_eventHandler(nrfx_saadc_evt_t const * p_event)
 			break;
 
 		default:
-			//printk("Unknown ADC Event %d\n", p_event->type);
+			printk("Unknown ADC Event %d\n", p_event->type);
 			break;
 	}
 }
@@ -71,35 +84,35 @@ uint8_t adc_initialise()
 	IRQ_DIRECT_CONNECT(NRFX_IRQ_NUMBER_GET(NRF_SAADC), IRQ_PRIO_LOWEST, nrfx_saadc_irq_handler, 0);
 
 	nrfx_saadc_channel_t adc_input1Config = 
-    {
-        .channel_config ={
+	{
+		.channel_config ={
 			.reference = NRF_SAADC_REFERENCE_VDD4,		// Reference = VDD / 4
 			.acq_time = NRF_SAADC_ACQTIME_40US,			// Acquisition time 40uS
 			.mode = NRF_SAADC_MODE_SINGLE_ENDED,		// Single Ended
 			.burst = NRF_SAADC_BURST_DISABLED 			// Normal Operation (Burst disabled)
 		
-        },
-        .channel_index = ADC_INPUT_0_CHANNEL_INDEX,		// ADC0
-        .pin_p = ADC_INPUT_0_PIN						// Input 0 = AIN6/P0.30
-    };
+		},
+		.channel_index = ADC_INPUT_0_CHANNEL_INDEX,		// ADC0
+		.pin_p = ADC_INPUT_0_PIN						// Input 0 = AIN6/P0.30
+	};
 
-    nrfx_saadc_channel_t adc_input2Config = 
-    {
-        .channel_config ={
-            .reference = NRF_SAADC_REFERENCE_VDD4,		// Reference = VDD / 4
-            .acq_time = NRF_SAADC_ACQTIME_40US,			// Acquisition time 40uS
-            .mode = NRF_SAADC_MODE_SINGLE_ENDED,		// Single Ended
-            .burst = NRF_SAADC_BURST_DISABLED,			// Normal Operation (Burst disabled)
-        },
-        .channel_index = ADC_INPUT_1_CHANNEL_INDEX,		// ADC1
-        .pin_p = ADC_INPUT_1_PIN						// Input 1 = AIN7/P0.31
-    };
+	nrfx_saadc_channel_t adc_input2Config = 
+	{
+		.channel_config ={
+			.reference = NRF_SAADC_REFERENCE_VDD4,		// Reference = VDD / 4
+			.acq_time = NRF_SAADC_ACQTIME_40US,			// Acquisition time 40uS
+			.mode = NRF_SAADC_MODE_SINGLE_ENDED,		// Single Ended
+			.burst = NRF_SAADC_BURST_DISABLED,			// Normal Operation (Burst disabled)
+		},
+		.channel_index = ADC_INPUT_1_CHANNEL_INDEX,		// ADC1
+		.pin_p = ADC_INPUT_1_PIN						// Input 1 = AIN7/P0.31
+	};
 
 	// Configuration includes the two inputs described above
-    nrfx_saadc_channel_t adc_configArray[ADC_NUM_OF_CHANNELS] = {
-        adc_input1Config, 
-        adc_input2Config
-    };
+	nrfx_saadc_channel_t adc_configArray[ADC_NUM_OF_CHANNELS] = {
+		adc_input1Config, 
+		adc_input2Config
+	};
 
 	// Apply configuration above
 	err = nrfx_saadc_channels_config(adc_configArray, ADC_NUM_OF_CHANNELS);
@@ -110,19 +123,20 @@ uint8_t adc_initialise()
 	// For blocking, set event_handler to NULL
 	err = nrfx_saadc_simple_mode_set(
 		BIT(ADC_INPUT_0_CHANNEL_INDEX) | BIT(ADC_INPUT_1_CHANNEL_INDEX),
-        NRF_SAADC_RESOLUTION_12BIT,
-        NRF_SAADC_OVERSAMPLE_DISABLED,
-        NULL);	// Blocking
+		NRF_SAADC_RESOLUTION_12BIT,
+		NRF_SAADC_OVERSAMPLE_DISABLED,
+		NULL);	// Blocking
 	if(err != NRFX_SUCCESS)
 		printk("Error %d in nrfx_saadc_simple_mode_set()\n", err);
 #endif
 
 #ifdef NONBLOCKING
+	// For non-blocking provide adc event handler function 
 	err = nrfx_saadc_simple_mode_set(
 		BIT(ADC_INPUT_0_CHANNEL_INDEX)|BIT(ADC_INPUT_1_CHANNEL_INDEX),
-        NRF_SAADC_RESOLUTION_12BIT,
-        NRF_SAADC_OVERSAMPLE_DISABLED,
-        adc_eventHandler);
+		NRF_SAADC_RESOLUTION_12BIT,
+		NRF_SAADC_OVERSAMPLE_DISABLED,
+		adc_eventHandler);
 	if(err != NRFX_SUCCESS)
 		printk("Error %d in nrfx_saadc_simple_mode_set()\n", err);
 #endif
@@ -149,11 +163,11 @@ void main(void)
 	while (1) {
 
 #ifdef NONBLOCKING
-	// This triggers a reading (non-blocking)
-	ret = nrfx_saadc_mode_trigger();
-	if (ret != NRFX_SUCCESS) {
-		printk("Error in nrfx_saadc_mode_trigger()\n");
-	}
+		// This triggers a reading (non-blocking)
+		ret = nrfx_saadc_mode_trigger();
+		if (ret != NRFX_SUCCESS) {
+			printk("Error in nrfx_saadc_mode_trigger()\n");
+		}
 #endif
 
 #ifdef BLOCKING	
