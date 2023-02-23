@@ -32,8 +32,6 @@
 #define ADC_BUFF_SIZE 64
 
 static nrf_saadc_value_t adc_rawDataBuffer[ADC_NUM_OF_CHANNELS];
-static uint8_t adc_bufferCounter = 0;
-static uint16_t adc_buffer[ADC_BUFF_SIZE];
 
 // Function prototypes 
 uint8_t adc_initialise();
