@@ -87,8 +87,8 @@ uint8_t adc_initialise()
 			.reference = NRF_SAADC_REFERENCE_VDD4,		// Reference = VDD / 4
 			.acq_time = NRF_SAADC_ACQTIME_40US,			// Acquisition time 40uS
 			.mode = NRF_SAADC_MODE_SINGLE_ENDED,		// Single Ended
-			.burst = NRF_SAADC_BURST_DISABLED 			// Normal Operation (Burst disabled)
-		
+			.burst = NRF_SAADC_BURST_DISABLED, 			// Normal Operation (Burst disabled)
+			.gain = NRF_SAADC_GAIN1_4,
 		},
 		.channel_index = ADC_INPUT_0_CHANNEL_INDEX,		// ADC0
 		.pin_p = ADC_INPUT_0_PIN						// Input 0 = AIN6/P0.30
@@ -101,6 +101,7 @@ uint8_t adc_initialise()
 			.acq_time = NRF_SAADC_ACQTIME_40US,			// Acquisition time 40uS
 			.mode = NRF_SAADC_MODE_SINGLE_ENDED,		// Single Ended
 			.burst = NRF_SAADC_BURST_DISABLED,			// Normal Operation (Burst disabled)
+			.gain = NRF_SAADC_GAIN1_4,
 		},
 		.channel_index = ADC_INPUT_1_CHANNEL_INDEX,		// ADC1
 		.pin_p = ADC_INPUT_1_PIN						// Input 1 = AIN7/P0.31
