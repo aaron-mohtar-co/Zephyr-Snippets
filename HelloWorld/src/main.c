@@ -13,6 +13,8 @@
 
 void main(void)
 {
+	printk("Zephyr Hello World! Example \nBoard: %s\n", CONFIG_BOARD);
+
 	while (1) {
 		printk("Hello World\n");
 		k_msleep(1000);
