@@ -1,0 +1,17 @@
+/* 
+ * All nodes require a binding. Zephyr provides a special /zephyr,user node
+ * for sample code and applications. The devicetree API provides it as a 
+ * convenient container when only a few simple properties are needed, such as 
+ * storing a hardware-dependent value, phandle(s), or GPIO pin.
+ *
+ * https://docs.zephyrproject.org/3.2.0/build/dts/bindings.html
+ */
+
+/ {
+	zephyr,user {
+		pwr-enable-gpios = <&gpio0 5 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
+	};
+};
+
+
