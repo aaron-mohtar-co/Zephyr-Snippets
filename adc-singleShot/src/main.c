@@ -9,7 +9,7 @@
  * between blocking and non-blocking behaviour.
  * 
  * Nordic has SAADC examples located in your nRF Connect SDK folder at
- * <nRF Connect SDK root>\modules\hal\nordic\samples\src\nrfx_saadc
+ * <nRF Connect SDK root>\modules\hal\nordic\nrfx\samples\src\nrfx_saadc
  */
 
 #include <zephyr/kernel.h>
