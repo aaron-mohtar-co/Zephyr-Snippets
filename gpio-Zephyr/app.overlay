@@ -12,6 +12,31 @@
 		pwr-enable-gpios = <&gpio0 5 GPIO_ACTIVE_LOW>;
 		reset-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
 	};
+
+	outputs {
+		compatible = "gpio-leds";
+		output0: out0 {
+			gpios = <&gpio0 8 GPIO_ACTIVE_HIGH>;
+			label = "REG EN";
+		};
+		output1: out1 {
+			gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
+			label = "DC/DC EN";
+		};
+	};
+
+	inputs {
+		compatible = "gpio-keys";
+		input0: in1 {
+			gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;
+			label = "ACCEL_INT";
+		};
+	};
+
+	aliases {
+		reg-en = &output0;
+		dcdc-en = &output1;
+	};
 };
 
 
