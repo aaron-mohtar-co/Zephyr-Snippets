@@ -1,8 +1,5 @@
 {
     "files.associations": {
-        "printk.h": "c",
-        "sensor.h": "c",
-        "string.h": "c",
-        "nrf_gpio.h": "c"
+        "nrfx_twis.h": "c"
     }
 }
