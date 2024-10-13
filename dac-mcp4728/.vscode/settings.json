@@ -1,0 +1,6 @@
+{
+    "nrf-connect.topdir": "${nrf-connect.sdk:2.6.1}",
+    "files.associations": {
+        "settings.h": "c"
+    }
+}

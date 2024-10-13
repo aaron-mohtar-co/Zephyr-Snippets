@@ -1,0 +1,61 @@
+// To get started, press Ctrl+Space to bring up the completion menu and view the available nodes.
+
+// You can also use the buttons in the sidebar to perform actions on nodes.
+// Actions currently available include:
+
+// * Enabling / disabling the node
+// * Adding the bus to a bus
+// * Removing the node
+// * Connecting ADC channels
+
+// For more help, browse the DeviceTree documentation at https://docs.zephyrproject.org/latest/guides/dts/index.html
+// You can also visit the nRF DeviceTree extension documentation at https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/guides/ncs_configure_app.html#devicetree-support-in-the-extension
+
+/ {
+    zephyr,user {
+        dac = <&dac0>;
+        dac-channel-id = <0>;
+        dac-resolution = <12>;
+    };
+    aliases{
+        dac0 = &dac0;
+    };
+};
+
+&pinctrl {
+
+	i2c0_default: i2c0_default {
+		group1 {
+			psels = <NRF_PSEL(TWIM_SDA, 0, 26)>,
+					<NRF_PSEL(TWIM_SCL, 0, 27)>;
+			bias-pull-up;
+		};
+	};
+
+	i2c0_sleep: i2c0_sleep {
+		group1 {
+			psels = <NRF_PSEL(TWIM_SDA, 0, 26)>,
+					<NRF_PSEL(TWIM_SCL, 0, 27)>;
+			low-power-enable;
+		};
+	};
+};
+
+&i2c0 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-1 = <&i2c0_sleep>;
+	pinctrl-names = "default", "sleep";
+	clock-frequency = <400000>;
+	
+	dac0: mcp4728@60 {
+		status = "okay";
+		compatible = "microchip,mcp4728";
+		reg = <0x60>;
+        voltage_reference = <1>;
+        #io-channel-cells = <1>;
+        power_down_mode = <0>;
+	};
+	
+};
