@@ -39,7 +39,7 @@ struct shared_data_t {
 // Use a FIFO queue to manage data sharing.
 K_FIFO_DEFINE(shared_data_fifo);
 
-// LEDs for nRF52840 DK
+// GPIO for nRF52840 DK
 static struct gpio_dt_spec led[] = {    GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0}),
 				        GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0}),
 				        GPIO_DT_SPEC_GET_OR(DT_ALIAS(led2), gpios, {0})};
@@ -52,6 +52,8 @@ void thread1()
         LOG_INF("Thread1: initialise LED 1");
         gpio_pin_configure_dt(&led[1],GPIO_OUTPUT_HIGH);
 
+        //struct shared_data_t shared_data1;
+
         while(1)
         {
                 gpio_pin_set_dt(&led[1],1);     // Turn on LED 1
@@ -59,9 +61,11 @@ void thread1()
 
                 struct shared_data_t *shared_data1 = k_fifo_get(&shared_data_fifo,K_MSEC(100));
                 gpio_pin_set_dt(&led[1],0);     // Turn off LED 1
-                if(shared_data1 != NULL) // Check if data is available in FIFO queue
+
+                // Check if there was data in the queue.
+                if(shared_data1 != NULL) 
                 {
-                        // Data is available.
+                        // Data available - > process it.
                         if(shared_data1->changed)
                         {
                                 LOG_INF("Shared data available: %d", shared_data1->value);
@@ -116,9 +120,9 @@ int main(void)
                 gpio_pin_set_dt(&led[0],0);     // Turn off LED 0
                 k_msleep(100);
 
-                if(gpio_pin_get_dt(&btn0) == 1) // Check if btn0 depressed
-                {       
-                        // Put shared data onto FIFO queue
+                if(gpio_pin_get_dt(&btn0) == 1) // Check if button 1 is depressed
+                {
+                        // Put data into FIFO queue
                         shared_data0.changed = true;
                         shared_data0.value = shared_data_counter++;
 		        char *mem_ptr = k_malloc(size);
