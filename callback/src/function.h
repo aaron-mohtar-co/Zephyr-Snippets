@@ -7,9 +7,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-//include <stdio.h>
-//#include <string.h>
-//#include <zephyr/device.h>
 #include <zephyr/kernel.h>
 
 // Define callback data structure.
