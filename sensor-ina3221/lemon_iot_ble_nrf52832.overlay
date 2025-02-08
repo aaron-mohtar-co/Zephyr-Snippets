@@ -42,5 +42,4 @@
 		conv-time-shunt = <3>;
 		avg-mode = <2>;
 	};
-	
 };
