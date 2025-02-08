@@ -21,25 +21,13 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
-#include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/uart.h>
-
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/uart.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/sensor.h>
-
 #include <zephyr/settings/settings.h>
-
 #include <zephyr/shell/shell.h>
 
-struct shell *shellPtr;
 const struct device *dev_ina3221 = DEVICE_DT_GET_ANY(ti_ina3221);
-
-const struct device *uart = DEVICE_DT_GET(DT_NODELABEL(uart0));
-
-//static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
 
 static int ina3221_cmd_configure_handler(const struct shell *sh, size_t argc, char **argv);
 static int ina3221_cmd_measure_handler(const struct shell *sh, size_t argc, char **argv);
@@ -54,16 +42,10 @@ SHELL_STATIC_SUBCMD_SET_CREATE
 
 SHELL_CMD_REGISTER(ina3221, &sub_ina3221, "INA3221 based measurement system", NULL);
 
-
 int main(void)
 {
         printk("INA3221 sensor test with SHELL\n");
 	
-	if (!device_is_ready(uart)){
-		printk("UART device not ready\r\n");
-		return 1 ;
-	}
-
         if (!dev_ina3221) {
 		printk("I2C: Device driver for ina3221 not found.\n");
 	} 
