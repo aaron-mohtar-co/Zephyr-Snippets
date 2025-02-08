@@ -60,7 +60,7 @@ int main(void)
 
 static int ina3221_cmd_configure_handler(const struct shell *sh, size_t argc, char **argv)
 {
-	shell_print(sh,"ina3221 configure command received - not implemented yet\n");
+	shell_print(sh,"INA3221 configure command received - not implemented yet\n");
 	return 0;
 }
 
@@ -78,15 +78,15 @@ static int ina3221_cmd_measure_handler(const struct shell *sh, size_t argc, char
 
 	sensor_sample_fetch(dev_ina3221);
 
-	sensor_channel_get(dev_ina3221,SENSOR_CHAN_VOLTAGE,&value);
-	voltage = value.val1+ value.val2/1000000.0;
+	sensor_channel_get(dev_ina3221, SENSOR_CHAN_VOLTAGE, &value);
+	voltage = sensor_value_to_double(&value);
 
-	sensor_channel_get(dev_ina3221,SENSOR_CHAN_CURRENT,&value);
-	current = value.val1+ value.val2/1000000.0;
+	sensor_channel_get(dev_ina3221, SENSOR_CHAN_CURRENT, &value);
+	current = sensor_value_to_double(&value);
 
-	sensor_channel_get(dev_ina3221,SENSOR_CHAN_POWER,&value);
-	power = value.val1+ value.val2/1000000.0;
+	sensor_channel_get(dev_ina3221, SENSOR_CHAN_POWER, &value);
+	power = sensor_value_to_double(&value);
 
-	shell_print(sh,"ina3221 CH%d %2.2fV %2.3fA %2.2fW", channel,voltage, current, power);
+	shell_print(sh,"INA3221 CH%d %2.2fV %2.3fA %2.2fW", channel, voltage, current, power);
 	return 0;
 }
