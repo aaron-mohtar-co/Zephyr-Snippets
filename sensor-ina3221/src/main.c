@@ -34,8 +34,6 @@
 
 #include <zephyr/shell/shell.h>
 
-#include "led.h"
-
 struct shell *shellPtr;
 const struct device *dev_ina3221 = DEVICE_DT_GET_ANY(ti_ina3221);
 
@@ -59,8 +57,6 @@ SHELL_CMD_REGISTER(ina3221, &sub_ina3221, "INA3221 based measurement system", NU
 
 int main(void)
 {
-        led_initialise(0,100,0,HEARTBEAT,200,10);
-
         printk("INA3221 sensor test with SHELL\n");
 	
 	if (!device_is_ready(uart)){
