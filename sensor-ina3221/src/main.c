@@ -16,15 +16,10 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <hal/nrf_gpio.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/sensor.h>
-#include <zephyr/settings/settings.h>
 #include <zephyr/shell/shell.h>
 
 /*
