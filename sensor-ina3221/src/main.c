@@ -27,6 +27,12 @@
 #include <zephyr/settings/settings.h>
 #include <zephyr/shell/shell.h>
 
+/*
+ * The following is defined in zephyr/drivers/sensor/ti/ina3221/ina3221.h
+ * It should have a specific header file in zephyr/include/zephyr/drivers/sensor/ that we can include, but doesn't.
+ */
+#define SENSOR_ATTR_INA3221_SELECTED_CHANNEL (SENSOR_ATTR_PRIV_START+1)
+
 const struct device *dev_ina3221 = DEVICE_DT_GET_ANY(ti_ina3221);
 
 static int ina3221_cmd_configure_handler(const struct shell *sh, size_t argc, char **argv);
@@ -73,7 +79,7 @@ static int ina3221_cmd_measure_handler(const struct shell *sh, size_t argc, char
 
 	struct sensor_value value;
 	value.val1 = channel;
-	sensor_attr_set(dev_ina3221, SENSOR_CHAN_VOLTAGE, 16, &value);
+	sensor_attr_set(dev_ina3221, SENSOR_CHAN_VOLTAGE, SENSOR_ATTR_INA3221_SELECTED_CHANNEL, &value);
 
 	sensor_sample_fetch(dev_ina3221);
 
