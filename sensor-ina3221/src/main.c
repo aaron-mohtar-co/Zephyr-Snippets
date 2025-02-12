@@ -16,32 +16,19 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <hal/nrf_gpio.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
-#include <zephyr/drivers/pwm.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/uart.h>
-
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/uart.h>
-#include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/sensor.h>
-
-#include <zephyr/settings/settings.h>
-
 #include <zephyr/shell/shell.h>
 
-#include "led.h"
+/*
+ * The following is defined in zephyr/drivers/sensor/ti/ina3221/ina3221.h
+ * It should have a specific header file in zephyr/include/zephyr/drivers/sensor/ that we can include, but doesn't.
+ */
+#define SENSOR_ATTR_INA3221_SELECTED_CHANNEL (SENSOR_ATTR_PRIV_START+1)
 
-struct shell *shellPtr;
 const struct device *dev_ina3221 = DEVICE_DT_GET_ANY(ti_ina3221);
-
-const struct device *uart = DEVICE_DT_GET(DT_NODELABEL(uart0));
-
-//static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
 
 static int ina3221_cmd_configure_handler(const struct shell *sh, size_t argc, char **argv);
 static int ina3221_cmd_measure_handler(const struct shell *sh, size_t argc, char **argv);
@@ -49,66 +36,57 @@ static int ina3221_cmd_measure_handler(const struct shell *sh, size_t argc, char
 // Shell configuration
 SHELL_STATIC_SUBCMD_SET_CREATE
 (sub_ina3221,
-	SHELL_CMD(configure, NULL, "NOT IMPLEMENTED YET", ina3221_cmd_configure_handler),
-        SHELL_CMD(measure, NULL, "measure <channel number>", ina3221_cmd_measure_handler),
+	SHELL_CMD(configure, NULL, "not yet implemented", ina3221_cmd_configure_handler),
+	SHELL_CMD(measure, NULL, "measure <channel number>", ina3221_cmd_measure_handler),
 	SHELL_SUBCMD_SET_END
 );
 
 SHELL_CMD_REGISTER(ina3221, &sub_ina3221, "INA3221 based measurement system", NULL);
 
-
 int main(void)
 {
-        led_initialise(0,100,0,HEARTBEAT,200,10);
+	printk("INA3221 Sensor Example with Shell\n");
 
-        printk("INA3221 sensor test with SHELL\n");
-	
-	if (!device_is_ready(uart)){
-		printk("UART device not ready\r\n");
-		return 1 ;
+	if (!dev_ina3221) {
+		printk("I2C: Device driver for ina3221 not found\n");
 	}
 
-        if (!dev_ina3221) {
-		printk("I2C: Device driver for ina3221 not found.\n");
-	} 
-        
-        while(1)
-        {
-                k_msleep(2000);
-        }
-        return 0;
+	while(1) {
+		k_msleep(2000);
+	}
+
+	return 0;
 }
 
 static int ina3221_cmd_configure_handler(const struct shell *sh, size_t argc, char **argv)
 {
-        shell_print(sh,"ina3221 configure cmd received - COMMAND NOT IMPLEMENTED YET\n");
-        return 0;
+	shell_print(sh,"INA3221 configure command received - not implemented yet\n");
+	return 0;
 }
 
 static int ina3221_cmd_measure_handler(const struct shell *sh, size_t argc, char **argv)
 {
+	double voltage;
+	double current;
+	double power;
 
-        double voltage;
-        double current;
-        double power;
+	int channel = atoi(argv[1]); 
 
-        int channel = atoi(argv[1]); 
+	struct sensor_value value;
+	value.val1 = channel;
+	sensor_attr_set(dev_ina3221, SENSOR_CHAN_VOLTAGE, SENSOR_ATTR_INA3221_SELECTED_CHANNEL, &value);
 
-        struct sensor_value value;
-        value.val1 = channel;
-        sensor_attr_set(dev_ina3221,SENSOR_CHAN_VOLTAGE,16,&value);
+	sensor_sample_fetch(dev_ina3221);
 
-        sensor_sample_fetch(dev_ina3221);
-        
-        sensor_channel_get(dev_ina3221,SENSOR_CHAN_VOLTAGE,&value);
-        voltage = value.val1+ value.val2/1000000.0;
-        
-        sensor_channel_get(dev_ina3221,SENSOR_CHAN_CURRENT,&value);
-        current = value.val1+ value.val2/1000000.0;
+	sensor_channel_get(dev_ina3221, SENSOR_CHAN_VOLTAGE, &value);
+	voltage = sensor_value_to_double(&value);
 
-        sensor_channel_get(dev_ina3221,SENSOR_CHAN_POWER,&value);
-        power = value.val1+ value.val2/1000000.0;
+	sensor_channel_get(dev_ina3221, SENSOR_CHAN_CURRENT, &value);
+	current = sensor_value_to_double(&value);
 
-        shell_print(sh,"ina3221 CH%d %2.2fV %2.3fA %2.2fW", channel,voltage, current, power);
-        return 0;
+	sensor_channel_get(dev_ina3221, SENSOR_CHAN_POWER, &value);
+	power = sensor_value_to_double(&value);
+
+	shell_print(sh,"INA3221 CH%d %2.2fV %2.3fA %2.2fW", channel, voltage, current, power);
+	return 0;
 }

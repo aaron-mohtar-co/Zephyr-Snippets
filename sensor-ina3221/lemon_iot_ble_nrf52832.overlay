@@ -37,10 +37,9 @@
 		compatible = "ti,ina3221";
 		reg = <0x40>;
 		shunt-resistors = < 100 100 100 >;
-		enable-channel = <1 1 0>;
+		enable-channel = <1 1 1>;
 		conv-time-bus = <7>;
 		conv-time-shunt = <3>;
 		avg-mode = <2>;
 	};
-	
 };
