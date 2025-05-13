@@ -38,7 +38,7 @@
 
 #define USER_BUTTON             DK_BTN1_MSK
 
-unsigned char ver_str[] = "V1.00";
+unsigned char ver_str[] = "V1.01";
 
 static bool app_button_state;
 
